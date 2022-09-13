@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_END
     }
     
     _dataLabel.text = @"Loading...";
-    __weak typeof(self) weakSelf = self;
+    typeof(self) __weak weakSelf = self;
     TDWSerialDataTaskSequence *dataTaskSequence = [[TDWSerialDataTaskSequence alloc] initWithURLArray:@[
         [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-5s.mp4"],
 //        [[NSURL alloc] initWithString:@"https://error.url/sample-20s.mp4"], // uncomment to check error scenario
@@ -114,7 +114,6 @@ NS_ASSUME_NONNULL_END
             }
             
             typeof(weakSelf) __strong strongSelf = weakSelf;
-            [strongSelf p_unsubscribeFromTaskSequenceProgress:strongSelf->_currentDataTaskSequence];
             if (error) {
                 strongSelf->_dataLabel.text = error.localizedDescription;
             } else {

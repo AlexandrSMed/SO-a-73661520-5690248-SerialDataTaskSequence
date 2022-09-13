@@ -46,12 +46,12 @@ typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
         queue.maxConcurrentOperationCount = 1;
         _tasksQueue = queue;
         
-        NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
         _urlSession = [NSURLSession sessionWithConfiguration:sessionConfiguration
                                                     delegate:self
                                                delegateQueue:nil];
         
-        _progress = [NSProgress progressWithTotalUnitCount:100];
+        _progress = [NSProgress progressWithTotalUnitCount:0];
         _progressAcessQueue = dispatch_queue_create("the.dreams.wind.queue.ProgressAcess", DISPATCH_QUEUE_CONCURRENT);
         _data = [NSMutableData data];
         _state = TDWSerialDataTaskSequenceStateSuspended;
@@ -76,7 +76,9 @@ typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
         return;
     }
     
-    _progress.completedUnitCount = 0;
+    [self p_changeProgressSynchronised:^(NSProgress *progress) {
+        progress.completedUnitCount = 0;
+    }];
     NSURLSession *session = _urlSession;
     // Prevents queue from starting the download straight away
     _tasksQueue.suspended = YES;
@@ -100,18 +102,15 @@ typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
                 return;
             }
             typeof(self) __strong strongSelf = weakSelf;
-            NSLog(@"%@ started", url);
             strongSelf.taskSemaphore = dispatch_semaphore_create(0);
             NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url
                                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
                                                       timeoutInterval:kRequestTimeout];
             [[session dataTaskWithRequest:request] resume];
             dispatch_semaphore_wait(strongSelf->_taskSemaphore, DISPATCH_TIME_FOREVER);
-            NSLog(@"%@ finished", url);
         }];
-        if (lastOperation) {
-            [lastOperation addDependency:operation];
-        }
+
+        [lastOperation addDependency:operation];
         lastOperation = operation;
         [_tasksQueue addOperation:operation];
     }
@@ -123,6 +122,9 @@ typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
         }
         
         typeof(weakSelf) __strong strongSelf = weakSelf;
+        [strongSelf p_changeProgressSynchronised:^(NSProgress *progress) {
+            progress.totalUnitCount = 0;
+        }];
         __block dispatch_group_t lengthRequestsGroup = dispatch_group_create();
         for (NSURL *url in strongSelf.urls) {
             dispatch_group_enter(lengthRequestsGroup);
@@ -136,14 +138,12 @@ typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
                 typeof(weakSelf) __strong strongSelf = weakSelf;
                 [strongSelf p_changeProgressSynchronised:^(NSProgress *progress) {
                     progress.totalUnitCount += response.expectedContentLength;
-                    NSLog(@"Recieved for %@: %lld", response.URL, response.expectedContentLength);
                     dispatch_group_leave(lengthRequestsGroup);
                 }];
             }];
             [task resume];
         }
         dispatch_group_wait(lengthRequestsGroup, DISPATCH_TIME_FOREVER);
-        NSLog(@"Length recieved: %lld", strongSelf.progress.totalUnitCount);
     }];
     [lastOperation addDependency:operation];
     [_tasksQueue addOperation:operation];
@@ -174,7 +174,6 @@ typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
 
 #pragma mark NSURLSessionDataDelegate
 
-
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     if (error) {
         [self cancel];
@@ -185,7 +184,6 @@ typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
-    // read/append data if needed
     [_data appendData:data];
     [self p_changeProgressSynchronised:^(NSProgress *progress) {
         progress.completedUnitCount += data.length;

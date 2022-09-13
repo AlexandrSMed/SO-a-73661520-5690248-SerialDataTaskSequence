@@ -17,18 +17,24 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Yts-MH-QDn">
-                                <rect key="frame" x="132" y="308" width="150" height="4"/>
+                                <rect key="frame" x="79" y="415.5" width="256" height="4"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="256" id="d6a-xg-oDj"/>
+                                </constraints>
                             </progressView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Esv-kA-EqI">
-                                <rect key="frame" x="162.5" y="320" width="89.5" height="31"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" role="primary" translatesAutoresizingMaskIntoConstraints="NO" id="Esv-kA-EqI">
+                                <rect key="frame" x="152" y="427.5" width="110" height="51.5"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Load Data"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Load Data" subtitle="Tap to Start">
+                                    <fontDescription key="titleFontDescription" style="UICTFontTextStyleTitle2"/>
+                                    <fontDescription key="subtitleFontDescription" style="UICTFontTextStyleCaption2"/>
+                                </buttonConfiguration>
                                 <connections>
                                     <action selector="didTapLoadDataButton:" destination="BYZ-38-t0r" eventType="primaryActionTriggered" id="Hn2-t8-0Y0"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Info Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jcJ-GT-5fY">
-                                <rect key="frame" x="170" y="359" width="74.5" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Info Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jcJ-GT-5fY">
+                                <rect key="frame" x="170" y="387" width="74.5" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -37,13 +43,16 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Esv-kA-EqI" firstAttribute="top" secondItem="Yts-MH-QDn" secondAttribute="bottom" constant="8" symbolic="YES" id="Cgv-Ih-eae"/>
-                            <constraint firstItem="Esv-kA-EqI" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="Oup-af-OW1"/>
-                            <constraint firstItem="Yts-MH-QDn" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="132" id="YBe-2s-EnG"/>
-                            <constraint firstItem="jcJ-GT-5fY" firstAttribute="top" secondItem="Esv-kA-EqI" secondAttribute="bottom" constant="8" symbolic="YES" id="bSc-ia-mI2"/>
-                            <constraint firstItem="Yts-MH-QDn" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="dSb-0B-FIT"/>
-                            <constraint firstItem="Yts-MH-QDn" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="264" id="gVg-rh-oD1"/>
-                            <constraint firstItem="jcJ-GT-5fY" firstAttribute="centerX" secondItem="Esv-kA-EqI" secondAttribute="centerX" id="tGy-if-bm2"/>
+                            <constraint firstItem="jcJ-GT-5fY" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="4ra-v0-GuB"/>
+                            <constraint firstItem="Yts-MH-QDn" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="NwN-wF-bSv"/>
+                            <constraint firstItem="Esv-kA-EqI" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="UR4-xc-OjY"/>
+                            <constraint firstItem="Yts-MH-QDn" firstAttribute="centerX" secondItem="Esv-kA-EqI" secondAttribute="centerX" id="YVS-8X-ga3"/>
+                            <constraint firstItem="Esv-kA-EqI" firstAttribute="top" secondItem="Yts-MH-QDn" secondAttribute="bottom" constant="8" symbolic="YES" id="ffs-dG-EQR"/>
+                            <constraint firstItem="Yts-MH-QDn" firstAttribute="top" secondItem="jcJ-GT-5fY" secondAttribute="bottom" constant="8" symbolic="YES" id="gDV-Mc-tV0"/>
+                            <constraint firstItem="Esv-kA-EqI" firstAttribute="top" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="top" id="kYu-Rx-tE5"/>
+                            <constraint firstItem="Esv-kA-EqI" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="lLd-HV-qbk"/>
+                            <constraint firstItem="Esv-kA-EqI" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="qYY-jY-UEw"/>
+                            <constraint firstItem="jcJ-GT-5fY" firstAttribute="centerX" secondItem="Yts-MH-QDn" secondAttribute="centerX" id="vz6-Qn-D3g"/>
                         </constraints>
                     </view>
                     <connections>
