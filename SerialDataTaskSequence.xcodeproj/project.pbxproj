@@ -14,6 +14,7 @@
 		5D371BD328D09C9A007FD8EA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5D371BD228D09C9A007FD8EA /* Assets.xcassets */; };
 		5D371BD628D09C9A007FD8EA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5D371BD428D09C9A007FD8EA /* LaunchScreen.storyboard */; };
 		5D371BD928D09C9A007FD8EA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D371BD828D09C9A007FD8EA /* main.m */; };
+		5D371BE128D09CBD007FD8EA /* TDWSerialDataTaskSequence.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D371BDF28D09CBD007FD8EA /* TDWSerialDataTaskSequence.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,8 @@
 		5D371BD528D09C9A007FD8EA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5D371BD728D09C9A007FD8EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5D371BD828D09C9A007FD8EA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		5D371BDF28D09CBD007FD8EA /* TDWSerialDataTaskSequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDWSerialDataTaskSequence.m; sourceTree = "<group>"; };
+		5D371BE028D09CBD007FD8EA /* TDWSerialDataTaskSequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDWSerialDataTaskSequence.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +70,8 @@
 				5D371BCA28D09C99007FD8EA /* SceneDelegate.m */,
 				5D371BCC28D09C99007FD8EA /* ViewController.h */,
 				5D371BCD28D09C99007FD8EA /* ViewController.m */,
+				5D371BE028D09CBD007FD8EA /* TDWSerialDataTaskSequence.h */,
+				5D371BDF28D09CBD007FD8EA /* TDWSerialDataTaskSequence.m */,
 				5D371BCF28D09C99007FD8EA /* Main.storyboard */,
 				5D371BD228D09C9A007FD8EA /* Assets.xcassets */,
 				5D371BD428D09C9A007FD8EA /* LaunchScreen.storyboard */,
@@ -149,6 +154,7 @@
 				5D371BCE28D09C99007FD8EA /* ViewController.m in Sources */,
 				5D371BC828D09C99007FD8EA /* AppDelegate.m in Sources */,
 				5D371BD928D09C9A007FD8EA /* main.m in Sources */,
+				5D371BE128D09CBD007FD8EA /* TDWSerialDataTaskSequence.m in Sources */,
 				5D371BCB28D09C99007FD8EA /* SceneDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
