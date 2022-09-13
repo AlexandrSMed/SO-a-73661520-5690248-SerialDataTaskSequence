@@ -15,6 +15,7 @@
 		5D371BD628D09C9A007FD8EA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5D371BD428D09C9A007FD8EA /* LaunchScreen.storyboard */; };
 		5D371BD928D09C9A007FD8EA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D371BD828D09C9A007FD8EA /* main.m */; };
 		5D371BE128D09CBD007FD8EA /* TDWSerialDataTaskSequence.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D371BDF28D09CBD007FD8EA /* TDWSerialDataTaskSequence.m */; };
+		5D371BE528D135EA007FD8EA /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5D371BE428D135EA007FD8EA /* LICENSE.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		5D371BD828D09C9A007FD8EA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		5D371BDF28D09CBD007FD8EA /* TDWSerialDataTaskSequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDWSerialDataTaskSequence.m; sourceTree = "<group>"; };
 		5D371BE028D09CBD007FD8EA /* TDWSerialDataTaskSequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDWSerialDataTaskSequence.h; sourceTree = "<group>"; };
+		5D371BE428D135EA007FD8EA /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,6 +50,7 @@
 		5D371BBA28D09C99007FD8EA = {
 			isa = PBXGroup;
 			children = (
+				5D371BE428D135EA007FD8EA /* LICENSE.txt */,
 				5D371BC528D09C99007FD8EA /* SerialDataTaskSequence */,
 				5D371BC428D09C99007FD8EA /* Products */,
 			);
@@ -138,6 +141,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D371BE528D135EA007FD8EA /* LICENSE.txt in Resources */,
 				5D371BD628D09C9A007FD8EA /* LaunchScreen.storyboard in Resources */,
 				5D371BD328D09C9A007FD8EA /* Assets.xcassets in Resources */,
 				5D371BD128D09C99007FD8EA /* Main.storyboard in Resources */,
