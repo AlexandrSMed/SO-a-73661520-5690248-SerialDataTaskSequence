@@ -14,7 +14,8 @@ static const NSTimeInterval kRequestTimeout = 60 * 4; // 4 minutes
 typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
     TDWSerialDataTaskSequenceStateSuspended,
     TDWSerialDataTaskSequenceStateCancelled,
-    TDWSerialDataTaskSequenceStateActive
+    TDWSerialDataTaskSequenceStateActive,
+    TDWSerialDataTaskSequenceStateCompleted
 };
 
 @interface TDWSerialDataTaskSequence()<NSURLSessionDataDelegate>
@@ -25,21 +26,36 @@ typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
 @property(strong, readonly, nonatomic) NSOperationQueue *tasksQueue;
 @property(strong, nonatomic) dispatch_semaphore_t taskSemaphore;
 
-@property(strong, readonly, nonatomic) NSMutableData *data;
+@property(strong, readwrite, nonatomic) NSFileHandle *fileHandle;
+@property(strong, readonly, nonatomic) NSURL *filePath;
+
 @property(copy, readonly, nonatomic) TDWSerialDataTaskSequenceCallback callback;
+
 @property(assign, nonatomic) TDWSerialDataTaskSequenceState state;
+@property(strong, readonly, nonatomic) dispatch_queue_t stateAcessQueue;
 
 @end
 
 @implementation TDWSerialDataTaskSequence
 
 @synthesize progress = _progress;
+@synthesize state = _state;
 
 #pragma mark Lifecycle
 
-- (instancetype)initWithURLArray:(NSArray<NSURL *> *)urls callback:(nullable TDWSerialDataTaskSequenceCallback)callback; {
+- (instancetype)initWithURLArray:(NSArray<NSURL *> *)urls
+                     filePathURL:(NSURL *)filePath
+                        callback:(nullable TDWSerialDataTaskSequenceCallback)callback {
     if (self = [super init]) {
-        _urls = [[NSArray alloc] initWithArray:urls copyItems:NO];
+        NSError *__autoreleasing fileHandleError;
+        _fileHandle = [NSFileHandle fileHandleForWritingToURL:filePath error:&fileHandleError];
+        if (fileHandleError) {
+            NSLog(@"Failed to init file handle with the given URL: %@. Error: %@", filePath, fileHandleError);
+            return nil;
+        }
+
+        _filePath = filePath;
+        _urls = [urls copy];
         
         NSOperationQueue *queue = [NSOperationQueue new];
         queue.name = @"the.dreams.wind.queue.SerialDownloader";
@@ -53,8 +69,8 @@ typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
         
         _progress = [NSProgress progressWithTotalUnitCount:0];
         _progressAcessQueue = dispatch_queue_create("the.dreams.wind.queue.ProgressAcess", DISPATCH_QUEUE_CONCURRENT);
-        _data = [NSMutableData data];
         _state = TDWSerialDataTaskSequenceStateSuspended;
+        _stateAcessQueue = dispatch_queue_create("the.dreams.wind.queue.StateAccess", DISPATCH_QUEUE_CONCURRENT);
         _callback = callback;
     }
     return self;
@@ -66,7 +82,7 @@ typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
     if (_state == TDWSerialDataTaskSequenceStateCancelled) {
         return;
     }
-    [_urlSession invalidateAndCancel];
+    [self p_releaseResources];
     [_tasksQueue cancelAllOperations];
     self.state = TDWSerialDataTaskSequenceStateCancelled;
 }
@@ -83,15 +99,14 @@ typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
     // Prevents queue from starting the download straight away
     _tasksQueue.suspended = YES;
     
-    // 3.1 Successful completion
+    // 3 Successful completion
     typeof(self) __weak weakSelf = self;
     NSOperation *lastOperation = [NSBlockOperation blockOperationWithBlock:^{
         if (!weakSelf) {
             return;
         }
         typeof(self) __strong strongSelf = weakSelf;
-        
-        strongSelf->_callback([strongSelf->_data copy], nil);
+        [strongSelf p_finishSuccessfully];
     }];
     [_tasksQueue addOperation:lastOperation];
     
@@ -153,6 +168,25 @@ typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
 
 #pragma mark Properties
 
+- (TDWSerialDataTaskSequenceState)state {
+    __block TDWSerialDataTaskSequenceState localState;
+    dispatch_sync(_progressAcessQueue, ^{
+        localState = _state;
+    });
+    return localState;
+}
+
+- (void)setState:(TDWSerialDataTaskSequenceState)state {
+    typeof(self) __weak weakSelf = self;
+    dispatch_barrier_async(_stateAcessQueue, ^{
+        if (!weakSelf) {
+            return;
+        }
+        typeof(weakSelf) __strong strongSelf = weakSelf;
+        strongSelf->_state = state;
+    });
+}
+
 - (NSProgress *)progress {
     __block NSProgress *localProgress;
     dispatch_sync(_progressAcessQueue, ^{
@@ -176,19 +210,45 @@ typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     if (error) {
-        [self cancel];
-        // 3.2 Failed completion
-        _callback([_data copy], error);
+        [self p_failWithError:error];
     }
     dispatch_semaphore_signal(_taskSemaphore);
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
-    [_data appendData:data];
+    if (self.state != TDWSerialDataTaskSequenceStateActive) {
+        return;
+    }
+
+    NSError *__autoreleasing writeDataError;
+    if (![_fileHandle writeData:data error:&writeDataError]) {
+        [self p_failWithError:writeDataError];
+        return;
+    }
+    
     [self p_changeProgressSynchronised:^(NSProgress *progress) {
         progress.completedUnitCount += data.length;
     }];
 }
 
+#pragma mark Private
+
+- (void)p_releaseResources {
+    self.fileHandle = nil;
+    [_urlSession invalidateAndCancel];
+}
+
+// 3.2 Failed completion
+- (void)p_failWithError:(NSError *)error {
+    [self cancel];
+    _callback(_filePath, error);
+}
+
+// 3.1 Success completion
+- (void)p_finishSuccessfully {
+    [self p_releaseResources];
+    self.state = TDWSerialDataTaskSequenceStateCompleted;
+    _callback(_filePath, nil);
+}
 
 @end

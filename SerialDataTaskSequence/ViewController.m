@@ -100,14 +100,28 @@ NS_ASSUME_NONNULL_END
         self.currentDataTaskSequence = nil;
     }
     
+    // Creates a file to write to
+    NSString *filePath = [NSString pathWithComponents:@[NSHomeDirectory(), @"File.data"]];
+    [NSFileManager.defaultManager createFileAtPath:filePath contents:nil attributes:nil];
+
     _dataLabel.text = @"Loading...";
     typeof(self) __weak weakSelf = self;
     TDWSerialDataTaskSequence *dataTaskSequence = [[TDWSerialDataTaskSequence alloc] initWithURLArray:@[
         [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-5s.mp4"],
 //        [[NSURL alloc] initWithString:@"https://error.url/sample-20s.mp4"], // uncomment to check error scenario
         [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-30s.mp4"],
+        [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-30s.mp4"],
+        [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-30s.mp4"],
+        [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-30s.mp4"],
+        [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-30s.mp4"],
+        [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-30s.mp4"],
+        [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-30s.mp4"],
+        [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-30s.mp4"],
+        [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-30s.mp4"],
+        [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-30s.mp4"],
+        [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-30s.mp4"],
         [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-20s.mp4"]
-    ] callback:^(NSData * _Nonnull data, NSError * _Nullable error) {
+    ] filePathURL:[NSURL fileURLWithPath:filePath] callback:^(NSURL * _Nonnull filePath, NSError * _Nullable error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (!weakSelf) {
                 return;
@@ -117,7 +131,16 @@ NS_ASSUME_NONNULL_END
             if (error) {
                 strongSelf->_dataLabel.text = error.localizedDescription;
             } else {
-                strongSelf->_dataLabel.text = [NSString stringWithFormat:@"Data length loaded: %lu", data.length];
+                NSError *__autoreleasing fileReadError;
+                NSDictionary<NSFileAttributeKey, id> *attributes = [NSFileManager.defaultManager attributesOfItemAtPath:filePath.path
+                                                                                                                  error:&fileReadError];
+                if (fileReadError) {
+                    strongSelf->_dataLabel.text = fileReadError.localizedDescription;
+                } else {
+                    long long dataLength = ((NSNumber *)attributes[NSFileSize]).longLongValue;
+                    strongSelf->_dataLabel.text = [NSString stringWithFormat:@"File Size loaded: %lld bytes.\nFile path: %@", dataLength, filePath.path];
+                }
+
             }
         });
     }];
