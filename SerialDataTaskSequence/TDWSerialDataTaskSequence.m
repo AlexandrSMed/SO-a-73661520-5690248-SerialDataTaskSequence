@@ -8,7 +8,7 @@
 #import <CFNetwork/CFHTTPStream.h>
 #import "TDWSerialDataTaskSequence.h"
 
-// Chunks requst timeout in seconds
+// Chunks request timeout in seconds
 static const NSTimeInterval kRequestTimeout = 60 * 4; // 4 minutes
 
 typedef NS_ENUM(NSUInteger, TDWSerialDataTaskSequenceState) {
