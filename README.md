@@ -1,6 +1,6 @@
 # Serial Data Task Sequence
 The project constitutes minimalistic application which features per cent progress tracking with use of
-[`NSURLSessionDataTask`](https://developer.apple.com/documentation/foundation/nsurlsessiondatatask) only (no other NSURLSession tasks are involved in the
+[`NSURLSessionDataTask`](https://developer.apple.com/documentation/foundation/nsurlsessiondatatask) only (no other `NSURLSession` tasks are involved in the
 implementation of the project.
 
 ## Variations
