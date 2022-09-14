@@ -101,10 +101,20 @@ NS_ASSUME_NONNULL_END
     }
     
     // Creates a file to write to
-    NSString *filePath = [NSString pathWithComponents:@[NSHomeDirectory(), @"File.data"]];
-    [NSFileManager.defaultManager createFileAtPath:filePath contents:nil attributes:nil];
+    NSError *__autoreleasing documentDirectorySearchError;
+    NSURL *documentsPathURL = [NSFileManager.defaultManager URLForDirectory:NSDocumentDirectory
+                                                                   inDomain:NSUserDomainMask
+                                                          appropriateForURL:nil
+                                                                     create:YES
+                                                                      error:&documentDirectorySearchError];
+    if (documentDirectorySearchError) {
+        NSLog(@"Could not located the documents directory: %@", documentDirectorySearchError);
+        return;
+    }
 
-    _dataLabel.text = @"Loading...";
+    NSURL *filePathURL = [NSURL fileURLWithPath:@"File.data" relativeToURL:documentsPathURL];
+    [NSFileManager.defaultManager createFileAtPath:filePathURL.path contents:nil attributes:nil];
+
     typeof(self) __weak weakSelf = self;
     TDWSerialDataTaskSequence *dataTaskSequence = [[TDWSerialDataTaskSequence alloc] initWithURLArray:@[
         [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-5s.mp4"],
@@ -121,7 +131,7 @@ NS_ASSUME_NONNULL_END
         [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-30s.mp4"],
         [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-30s.mp4"],
         [[NSURL alloc] initWithString:@"https://download.samplelib.com/mp4/sample-20s.mp4"]
-    ] filePathURL:[NSURL fileURLWithPath:filePath] callback:^(NSURL * _Nonnull filePath, NSError * _Nullable error) {
+    ] filePathURL:filePathURL callback:^(NSURL * _Nonnull filePath, NSError * _Nullable error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (!weakSelf) {
                 return;
@@ -144,7 +154,12 @@ NS_ASSUME_NONNULL_END
             }
         });
     }];
-    
+    if (!dataTaskSequence) {
+        NSLog(@"Failed to create data task sequence");
+        return;
+    }
+
+    _dataLabel.text = @"Loading...";
     [self p_subscribeToTaskSequenceProgress:dataTaskSequence];
     [dataTaskSequence resume];
     self.currentDataTaskSequence = dataTaskSequence;
